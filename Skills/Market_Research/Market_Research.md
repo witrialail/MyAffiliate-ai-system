@@ -1,75 +1,127 @@
 ---
 name: firecrawl-market-research
-description: Extract market, financial, earnings, industry, and company metrics with Firecrawl. Use when the user asks for market research, industry trends, public company data, financial comparisons, earnings research, or structured market reports.
+description: Research and evaluate affiliate markets, categories, and sub-niches using Firecrawl, market evidence, trends, competition, audience signals, content potential, and affiliate commercial potential.
 license: ISC
+
 metadata:
   author: firecrawl
-  version: "0.1.0"
+  version: "0.1.0-affiliate"
   homepage: https://www.firecrawl.dev
   source: https://github.com/firecrawl/firecrawl-workflows
+
 inputs:
   - name: FIRECRAWL_API_KEY
     description: Firecrawl API key for hosted Firecrawl requests.
     required: true
 ---
 
-# Firecrawl Market Research
+# Affiliate Market Research
 
-Use this for sourced market and financial research.
+## Purpose
 
-## Onboarding Interview
+Research and evaluate markets, categories, and sub-niches before product-level affiliate research begins.
 
-Infer the market/company, data focus, timeframe, and output format from context. If the research target is clear, proceed immediately.
+The goal is to identify opportunities with strong demand, commercial potential, content potential, and suitable competition.
 
-Ask at most 1-3 concise questions only if blocked, such as the market/company, required data focus, or timeframe/geography.
+## Onboarding
 
-## Firecrawl Collection Plan
+Infer from context whenever possible:
 
-Use Firecrawl search and scrape for market reports, news, investor relations, SEC filings, and company pages. Use browser where charts, tabs, period selectors, or financial portals require interaction.
+- target market or category
+- country or geography
+- target platform
+- audience
+- timeframe
+- price range
 
-Common sources include company investor relations pages, SEC filings, financial portals, earnings releases, industry reports, and news.
+Ask questions only when essential information is missing.
 
-## Parallel Work
+## Research Collection
 
-If appropriate, use sub-agents or equivalent parallel task runners:
+Use Firecrawl search and scrape to collect relevant evidence from:
 
-- company financials
-- market metrics
-- industry trends
-- recent news and analyst commentary
-- source validation
+- industry reports
+- official company or brand pages
+- ecommerce platforms
+- market reports
+- credible news
+- trend reports
+- financial or industry portals
 
-## Final Deliverable
+Prefer recent data when evaluating current market conditions.
 
-```markdown
-# Market Research: [Market]
+## Research Areas
 
-## Market Overview
-[Industry description, size, growth, key players]
+Evaluate:
 
-## Company Profiles
-[Financial summary, market metrics, recent developments]
+1. Market demand
+2. Market growth and trends
+3. Affiliate commercial potential
+4. Content potential
+5. Competition
+6. Audience fit
+7. Market risks
 
-## Comparison Tables
-[Revenue, margins, valuation multiples, growth]
+## Affiliate Evaluation
 
-## Trends And Outlook
-[Industry trends, forecasts, risks]
+After collecting evidence, evaluate the opportunity using:
 
-## Sources
-[URLs and data extracted]
+`references/scoring-framework.md`
 
-## Rerun Inputs
-workflow: firecrawl-market-research
-query: [market/company]
-companies: [list]
-data_points: [all/financial/metrics/trends]
-output: [json/markdown]
-```
+Score every factor from 0–10 and calculate the final Opportunity Score.
+
+Do not assign a score without supporting evidence.
+
+## Decision
+
+Classify the market as:
+
+- GO
+- TEST
+- WATCH
+- SKIP
+
+## Output
+
+Return:
+
+- market/category
+- target audience
+- price range
+- major market signals
+- competition
+- trends
+- affiliate potential
+- content potential
+- risks
+- individual scores
+- Opportunity Score
+- final decision
+- recommended next action
+
+## Evidence Rules
+
+- Never fabricate data.
+- Separate facts, estimates, and assumptions.
+- Cross-reference important numbers whenever possible.
+- Note conflicting information between sources.
+- Include period and unit for important metrics.
+- Identify important data gaps.
+- Prefer evidence over assumptions.
+
+## Workflow
+
+Market Research  
+→ Evidence Collection  
+→ Source Validation  
+→ Opportunity Scoring  
+→ GO / TEST / WATCH / SKIP  
+→ Product Research
 
 ## Quality Bar
 
-- Cross-reference key numbers when possible.
-- Note conflicting data across sources.
-- Include period and unit for every metric.
-- Do not provide financial advice.
+The final recommendation must be actionable for affiliate decision-making.
+
+A high Opportunity Score means the market may proceed to Product Research.
+
+Do not recommend a category only because it is viral.
