@@ -4,8 +4,8 @@ description: Research and evaluate affiliate markets, categories, and sub-niches
 license: ISC
 
 metadata:
-  author: firecrawl
-  version: "0.2.0-affiliate"
+  author: Witriliun
+  version: "0.2.1-affiliate"
   homepage: https://www.firecrawl.dev
   source: https://github.com/firecrawl/firecrawl-workflows
 
@@ -85,7 +85,17 @@ Do not use community discussions as primary evidence for:
 - regulatory rules
 - official platform policies
 
-Prefer recent evidence when evaluating current market conditions.
+For current-market evaluations, prioritize evidence from the current year whenever reliable data is available.
+
+Older evidence may be used for:
+
+- historical comparison
+- long-term trend context
+- regulatory background
+
+Older evidence must not replace newer reliable evidence when newer data exists.
+
+Clearly label older evidence as historical context.
 
 ---
 
@@ -236,7 +246,30 @@ A high Opportunity Score with weak evidence must not automatically receive a fin
 
 ## Compliance and Hard Risk Gate
 
-Evaluate major legal, safety, authenticity, platform-policy, and regulatory risks before finalizing the recommendation.
+Evaluate major legal, safety, authenticity, platform-policy, certification, prohibited-claim, and regulatory risks before finalizing the recommendation.
+
+The Compliance Gate must contain only issues related to:
+
+- legal requirements
+- regulatory requirements
+- safety
+- authenticity
+- mandatory certification
+- prohibited or unsupported claims
+- platform-policy restrictions
+- prohibited product categories
+
+Do **not** place normal commercial uncertainty inside the Compliance Gate.
+
+The following belong under `Critical Data Gaps` or `Execution Readiness` instead:
+
+- commission rates
+- conversion rates
+- stock stability
+- warranty quality
+- refund rates
+- cancellation rates
+- observed performance data
 
 Possible statuses:
 
@@ -246,17 +279,17 @@ Possible statuses:
 
 ### PASS
 
-No critical issue identified.
+No critical compliance issue identified.
 
 ### REVIEW
 
-Important information is missing or uncertain.
+Important legal, regulatory, safety, authenticity, certification, claim, or platform-policy information is missing or uncertain.
 
 Execution readiness cannot exceed `TEST` until validated.
 
 ### REJECT
 
-A critical legal, safety, authenticity, or platform-policy issue exists.
+A critical legal, safety, authenticity, certification, prohibited-claim, or platform-policy issue exists.
 
 Final decision must be:
 
@@ -278,11 +311,15 @@ Examples:
 - stock stability
 - conversion data
 - cancellation or refund rates
+- warranty quality
 - product authenticity
 - regulatory status
 - platform-specific commercial evidence
+- observed product performance
 
 Important missing data must affect scoring or execution readiness according to the scoring framework.
+
+Do not automatically classify commercial data gaps as compliance issues.
 
 ---
 
@@ -407,6 +444,8 @@ recommended_next_action:
 - Use secondary sources only where appropriate.
 - Do not present assumptions as facts.
 - Do not derive false precision from incomplete data.
+- Distinguish current-year evidence from historical context.
+- If current-year evidence is unavailable, say so explicitly.
 
 ---
 
@@ -461,6 +500,8 @@ Evidence Collection
       ↓
 Source Validation
       ↓
+Recency Check
+      ↓
 Platform Role Assessment
       ↓
 Compliance / Hard Risk Gate
@@ -498,12 +539,17 @@ Always consider:
 4. Compliance / Hard Risk Gate
 5. Execution Readiness
 6. Platform Fit
+7. Evidence Recency
 
 When multiple platforms are evaluated, always include `platform_scores` inside the structured output.
 
 Use the field name `decision` consistently for the final overall decision.
 
 Platform allocation percentages must be labeled as hypotheses unless supported by observed performance data.
+
+Compliance issues and commercial execution gaps must remain clearly separated.
+
+For current-market research, prefer current-year evidence whenever reliable evidence exists.
 
 Do not recommend a category only because it is viral.
 
