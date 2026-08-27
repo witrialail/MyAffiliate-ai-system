@@ -1,11 +1,11 @@
 ---
 name: firecrawl-market-research
-description: Research and evaluate affiliate markets, categories, and sub-niches using Firecrawl, current market evidence, platform signals, competition, audience fit, content potential, affiliate economics, and execution readiness.
+description: Research and evaluate affiliate markets, categories, and sub-niches using Firecrawl, current market evidence, platform signals, competition, audience fit, content potential, affiliate economics, proportional risk handling, and execution readiness.
 license: ISC
 
 metadata:
   author: Witriliun
-  version: "0.2.1-affiliate"
+  version: "0.2.2-affiliate"
   homepage: https://www.firecrawl.dev
   source: https://github.com/firecrawl/firecrawl-workflows
 
@@ -32,6 +32,8 @@ The goal is to identify opportunities with:
 - realistic execution readiness.
 
 This skill must remain category-agnostic and work across markets such as fashion, beauty, electronics, home and living, sports, automotive, digital products, and other affiliate categories.
+
+The skill should support progression, not block promising opportunities because of small uncertainties.
 
 ---
 
@@ -119,6 +121,7 @@ Also evaluate:
 11. Platform roles
 12. Platform-specific fit
 13. Execution readiness
+14. Risk severity
 
 ---
 
@@ -244,6 +247,67 @@ A high Opportunity Score with weak evidence must not automatically receive a fin
 
 ---
 
+## Proportional Risk Handling
+
+Apply risk proportionally.
+
+Not every problem, uncertainty, or missing data point should block progression.
+
+Classify unresolved issues as:
+
+### MINOR
+
+Examples:
+
+- secondary demographic detail missing;
+- small source inconsistency;
+- non-essential historical data unavailable;
+- minor platform-specific uncertainty.
+
+Handling:
+
+- do not block Product Research;
+- no automatic downgrade required;
+- record the issue for later validation.
+
+### MODERATE
+
+Examples:
+
+- actual SKU commission not yet known;
+- stock stability not yet verified;
+- warranty quality unclear;
+- conversion data unavailable;
+- attribution route needs testing.
+
+Handling:
+
+- normally continue as `TEST`;
+- proceed to Product Research;
+- validate during product-level research.
+
+### CRITICAL
+
+Examples:
+
+- illegal or prohibited product category;
+- missing mandatory legal certification;
+- serious safety concern;
+- counterfeit or clearly unauthenticated product supply;
+- prohibited platform behavior;
+- no viable affiliate monetization route.
+
+Handling:
+
+- use `REVIEW` or `SKIP`;
+- do not proceed to execution until resolved.
+
+Do not downgrade or block an otherwise promising market solely because of MINOR issues.
+
+MODERATE uncertainty should normally support progression to Product Research under `TEST`.
+
+---
+
 ## Compliance and Hard Risk Gate
 
 Evaluate major legal, safety, authenticity, platform-policy, certification, prohibited-claim, and regulatory risks before finalizing the recommendation.
@@ -281,15 +345,19 @@ Possible statuses:
 
 No critical compliance issue identified.
 
+Minor compliance uncertainty that does not materially affect legality, safety, authenticity, or platform eligibility may still proceed to Product Research.
+
 ### REVIEW
 
-Important legal, regulatory, safety, authenticity, certification, claim, or platform-policy information is missing or uncertain.
+Important legal, regulatory, safety, authenticity, certification, claim, or platform-policy information is unresolved.
 
-Execution readiness cannot exceed `TEST` until validated.
+Use REVIEW only when the uncertainty is meaningful enough to affect execution.
+
+Moderate unresolved issues may still proceed to Product Research under `TEST` if they can reasonably be verified during the next stage.
 
 ### REJECT
 
-A critical legal, safety, authenticity, certification, prohibited-claim, or platform-policy issue exists.
+A confirmed critical legal, safety, authenticity, certification, prohibited-claim, or platform-policy issue exists.
 
 Final decision must be:
 
@@ -317,7 +385,37 @@ Examples:
 - platform-specific commercial evidence
 - observed product performance
 
-Important missing data must affect scoring or execution readiness according to the scoring framework.
+Classify important gaps as:
+
+- MINOR
+- MODERATE
+- CRITICAL
+
+Not every data gap is a blocker.
+
+### MINOR
+
+Useful but non-essential information is missing.
+
+Proceed normally.
+
+### MODERATE
+
+Could materially affect commercial performance.
+
+Proceed to Product Research with `TEST` status.
+
+### CRITICAL
+
+Could invalidate:
+
+- legality
+- safety
+- authenticity
+- monetization
+- platform eligibility
+
+Must be resolved before execution.
 
 Do not automatically classify commercial data gaps as compliance issues.
 
@@ -349,6 +447,32 @@ Possible statuses:
 - WATCH
 - SKIP
 
+Do not generate a numeric Execution Readiness score unless a separate scoring formula is explicitly defined in the framework.
+
+By default, return only:
+
+```yaml
+execution_readiness: GO
+```
+
+or:
+
+```yaml
+execution_readiness: TEST
+```
+
+or:
+
+```yaml
+execution_readiness: WATCH
+```
+
+or:
+
+```yaml
+execution_readiness: SKIP
+```
+
 ### Final Decision
 
 Use the field:
@@ -357,7 +481,7 @@ Use the field:
 decision:
 ```
 
-Do not use alternate field names such as:
+Do not use:
 
 ```yaml
 final_decision:
@@ -365,12 +489,52 @@ final_decision:
 
 If Market Opportunity and Execution Readiness differ, use the more conservative status for `decision`.
 
+However, `TEST` is a valid progression state and should normally continue to Product Research.
+
 Example:
 
 ```yaml
 market_opportunity: GO
 execution_readiness: TEST
 decision: TEST
+```
+
+This means:
+
+- market opportunity is strong;
+- some validation remains;
+- Product Research should continue.
+
+---
+
+## Progression Rule
+
+Market Research is a market-level filter.
+
+It should not attempt to resolve every product-level uncertainty.
+
+Proceed to Product Research when:
+
+- Market Opportunity is `GO` or `TEST`;
+- no confirmed CRITICAL compliance issue exists;
+- at least one plausible monetization route exists;
+- remaining MINOR or MODERATE gaps can be validated at product level.
+
+Example:
+
+```text
+Market Opportunity: GO
+Execution Readiness: TEST
+Unresolved Issues: MODERATE
+
+→ PROCEED TO PRODUCT RESEARCH
+```
+
+Only stop progression when:
+
+```text
+Confirmed CRITICAL issue
+→ REVIEW / SKIP
 ```
 
 ---
@@ -405,6 +569,11 @@ platform_scores:
 opportunity_score:
 evidence_confidence:
 
+risk_summary:
+  minor:
+  moderate:
+  critical:
+
 compliance_gate:
   status:
   issues:
@@ -424,6 +593,9 @@ assumptions:
 risks:
 
 data_gaps:
+  minor:
+  moderate:
+  critical:
 
 recommended_platform_mix:
 
@@ -473,19 +645,46 @@ Do not present estimated platform allocations as optimized strategy.
 
 ## Recommended Next Action
 
-The recommendation must specify what should happen next.
-
-A positive market result should normally move into:
+A positive Market Research result should normally move directly into:
 
 `Product Research`
 
-but only when:
+when the market receives:
 
-- market attractiveness is sufficient;
-- evidence confidence is acceptable;
-- no critical compliance issue requires rejection;
-- at least one viable monetization route exists;
-- remaining gaps can reasonably be validated at product level.
+- GO
+- TEST
+
+and no confirmed CRITICAL blocker exists.
+
+Do not require a content-performance pilot before Product Research.
+
+Product Research must happen before product-level testing because it identifies:
+
+- candidate products
+- seller eligibility
+- commissions
+- compliance status
+- product quality signals
+- stock
+- commercial viability
+
+Performance testing should occur later.
+
+Correct flow:
+
+```text
+Market Research
+      ↓
+Product Research
+      ↓
+Product Scoring
+      ↓
+Product Validation
+      ↓
+Content Pilot
+      ↓
+Performance Analysis
+```
 
 Do not jump directly to public product recommendations.
 
@@ -504,6 +703,8 @@ Recency Check
       ↓
 Platform Role Assessment
       ↓
+Risk Severity Classification
+      ↓
 Compliance / Hard Risk Gate
       ↓
 Opportunity Scoring
@@ -516,9 +717,9 @@ Market Opportunity
       ↓
 Execution Readiness
       ↓
-Platform Mix Recommendation
-      ↓
 GO / TEST / WATCH / SKIP
+      ↓
+Progression Check
       ↓
 Product Research
 ```
@@ -540,10 +741,21 @@ Always consider:
 5. Execution Readiness
 6. Platform Fit
 7. Evidence Recency
+8. Risk Severity
 
-When multiple platforms are evaluated, always include `platform_scores` inside the structured output.
+Do not overreact to minor uncertainty.
 
-Use the field name `decision` consistently for the final overall decision.
+MINOR issues should not block progression.
+
+MODERATE issues should normally allow progression under `TEST`.
+
+Only confirmed CRITICAL issues should prevent progression.
+
+When multiple platforms are evaluated, always include `platform_scores`.
+
+Use the field name `decision` consistently.
+
+Do not generate unsupported numeric Execution Readiness scores.
 
 Platform allocation percentages must be labeled as hypotheses unless supported by observed performance data.
 
